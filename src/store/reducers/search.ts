@@ -1,7 +1,7 @@
 import { SET_SEARCH_VISIBILITY } from "../actions";
-import { SearchState } from "../models";
 
-const initialState: SearchState = {
+
+const initialState: any = {
   searchIsVisible: false,
 };
 

@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { LatLngExpression } from "leaflet";
-import { MapContainer, TileLayer, Marker, Tooltip, Polyline ,useMapEvents} from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Tooltip, Polyline , PolylineProps} from "react-leaflet";
 import { connect } from "react-redux";
-import { setPlacePreviewVisibility, setSelectedPlace } from "../../store/actions";
-import { IState, Place } from "../../store/models";
+import { setPlacePreviewVisibility } from "../../store/actions";
 import AddMarker from "./AddMarker";
 
 import "./Map.css";
 
-const Map = () => {
-  const defaultPosition: LatLngExpression = [-9.189967, -75.015152];
+interface MapMode {
+  distances: boolean,
+  cpu: boolean
+}
 
+const Map = (props: MapMode) => {
+  const defaultPosition: LatLngExpression = [-9.189967, -75.015152];
 
 
   return (
@@ -27,14 +30,13 @@ const Map = () => {
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-
-        <AddMarker  />
+        <AddMarker distances={props.distances} cpu={props.cpu} />
       </MapContainer>
     </div>
   );
 };
 
-const mapStateToProps = (state: IState) => {
+const mapStateToProps = (state: any) => {
   const { places } = state;
   return {
     isVisible: places.placePreviewsIsVisible,
@@ -47,8 +49,6 @@ const mapDispatchToProps = (dispatch: any) => {
   return {
     togglePreview: (payload: boolean) =>
       dispatch(setPlacePreviewVisibility(payload)),
-    setPlaceForPreview: (payload: Place) =>
-      dispatch(setSelectedPlace(payload)),
   };
 };
 
