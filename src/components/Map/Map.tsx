@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React  from "react";
 import { LatLngExpression } from "leaflet";
-import { MapContainer, TileLayer, Marker, Tooltip, Polyline , PolylineProps} from "react-leaflet";
+import { MapContainer, TileLayer } from "react-leaflet";
 import { connect } from "react-redux";
 import { setPlacePreviewVisibility } from "../../store/actions";
 import AddMarker from "./AddMarker";

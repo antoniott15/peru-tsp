@@ -14,12 +14,12 @@ const Header = (props: HeaderProps) => {
       <Box w="100%" h="20" >
         <Grid templateColumns="repeat(3, 1fr)" gap={6} bg="blue.500">
           <Box w="100%" h="20" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <Button variant="ghost" onClick={() => props.clickOnDistance()}>
+            <Button variant="ghost"  color="white" onClick={() => props.clickOnDistance()}>
               Distancia
             </Button>
           </Box>
           <Box w="100%" h="20" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <Button variant="ghost" onClick={() => props.clickOnCPUProcess()}>
+            <Button variant="ghost"  color="white" onClick={() => props.clickOnCPUProcess()}>
               Tiempo de proceso en computadores
             </Button>
           </Box>
