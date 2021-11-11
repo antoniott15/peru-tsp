@@ -14,26 +14,20 @@ interface MapMode {
 
 const AddMarker = (props: MapMode) => {
   const [line, setLines] = useState<Array<[number, number]>>([[-9.189967, -75.015152]])
-  const [positions, setPositions] = useState([
-    { lat: -9.189967, lng: -75.015152 } as LatLngExpression,
-  ])
+  const [positions, setPositions] = useState<Array<LatLngExpression|null>>([])
 
 
   useEffect(() => {
     const lines = new Array<[number, number]>()
-    if (props.cpu) {
+    if (props.cpu && positions) {
+      //@ts-ignore
       positions.forEach((value: LatLngExpression) => {
         const ltng = value as LatLng
         lines.push([ltng.lat, ltng.lng])
       })
     }
-    if (props.distances) {
-      positions.forEach((value: LatLngExpression) => {
-        console.log(value)
-      })
-    }
     setLines(lines)
-  }, [props])
+  }, [props,positions])
 
   useMapEvents({
     click: (e) => {
@@ -44,9 +38,10 @@ const AddMarker = (props: MapMode) => {
   return positions.length <= 1 ? null : (
     <>
       {props.cpu || props.distances ? <Polyline positions={line} /> : null}
-      {positions.map((pos, i) => {
+      {positions ? positions.map((pos, i) => {
+        //@ts-ignore
         return <Marker key={i} position={pos} > </Marker>
-      })}
+      }): null}
     </>
   );
 };
