@@ -7,7 +7,7 @@ import {
   setPrePlaceLocation,
 } from "../../store/actions";
 
-import { graph, calcDistance, CreateAdjacentMatrix } from "./Graph"
+import { graph, calcDistance, CreateAdjacentMatrix, PrimMST, DrawLines } from "./Graph"
 interface MapMode {
   distances: boolean,
   cpu: boolean
@@ -39,6 +39,16 @@ const AddMarker = (props: MapMode) => {
       })
     }
 
+    (async () => {
+      try {
+        const adjacency = await CreateAdjacentMatrix(graph)
+
+        const prim =  PrimMST(adjacency)
+
+      }catch(err) {
+        console.log(err)
+      }
+    })()
 
 
 

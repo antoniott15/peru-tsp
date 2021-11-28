@@ -55,3 +55,58 @@ const toRad = (Value: number): number => {
   return Value * Math.PI / 180;
 }
 
+const minKey = (numVertex: number, key: Array<number>, mstSet: Array<unknown>): number => {
+  let min = Number.MAX_VALUE, min_index;
+
+  for (let v = 0; v < numVertex; v++) {
+    if (mstSet[v] === false && key[v] < min) {
+      min = key[v]
+      min_index = v;
+    }
+  }
+
+  return min_index || 0;
+}
+
+
+export interface DrawLines {
+  from: string,
+  to: string
+}
+
+export const PrimMST = (graph: Array<Array<number>>): Array<DrawLines> => {
+  const parent = new Array<number>()
+  const key = new Array<number>()
+  const set = new Array<unknown>()
+  const numVertex = graph.length
+
+  for (let i = 0; i < numVertex; i++) {
+    key.push(Number.MAX_VALUE)
+    set.push(false)
+  }
+
+  key[0] = 0;
+  parent.push(-1)
+
+  for (let count = 0; count < numVertex - 1; count++) {
+    const u = minKey(numVertex, key, set);
+    set[u] = true;
+
+    for (let v = 0; v < numVertex; v++) {
+      if (graph[u][v] && set[v] === false && graph[u][v] < key[v]) {
+        parent[v] = u
+        key[v] = graph[u][v]
+      }
+    }
+  }
+
+  const result = new Array<DrawLines>()
+  for (let i = 1; i < numVertex; i++){
+    result.push({
+      from: `${parent[i]}`,
+      to: `${i}`
+    })
+    console.log(`from: ${parent[i]} to ${i} with weight ${graph[i][parent[i]] }`)
+  }
+  return result
+}
