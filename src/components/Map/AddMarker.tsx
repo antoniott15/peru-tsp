@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { LatLng, LatLngExpression } from "leaflet";
-import { Marker,  useMapEvents, Polyline } from "react-leaflet";
+import { Marker, useMapEvents, Polyline } from "react-leaflet";
 import { connect } from "react-redux";
 import {
   setPlaceFormVisibility,
   setPrePlaceLocation,
 } from "../../store/actions";
 
+import { graph, calcDistance, CreateAdjacentMatrix } from "./Graph"
 interface MapMode {
   distances: boolean,
   cpu: boolean
@@ -14,23 +15,39 @@ interface MapMode {
 
 const AddMarker = (props: MapMode) => {
   const [line, setLines] = useState<Array<[number, number]>>([[-9.189967, -75.015152]])
-  const [positions, setPositions] = useState<Array<LatLngExpression|null>>([])
+  const [positions, setPositions] = useState<Array<LatLngExpression | null>>([])
 
 
   useEffect(() => {
     const lines = new Array<[number, number]>()
     if (props.cpu && positions) {
       //@ts-ignore
-      positions.forEach((value: LatLngExpression) => {
-        const ltng = value as LatLng
-        lines.push([ltng.lat, ltng.lng])
+      // positions.forEach((value: LatLngExpression, i: number) => {
+      //   const ltng = value as LatLng
+      //   lines.push([ltng.lat, ltng.lng])
+      // })
+
+
+      graph.forEachNode((node1, i) => {
+        graph.forEachNode((node2, j) => {
+          if (node1 !== node2 && Number(node1) > Number(node2)) {
+            graph.addEdge(node1, node2, {
+              weight: calcDistance(i.lat, i.lng, j.lat, j.lng)
+            })
+          }
+        })
       })
     }
+
+
+
+
     setLines(lines)
-  }, [props,positions])
+  }, [props, positions])
 
   useMapEvents({
     click: (e) => {
+      graph.addNode(positions.length.toString(), { lat: e.latlng.lat, lng: e.latlng.lng })
       setPositions([...positions, e.latlng])
     },
   });
@@ -41,7 +58,7 @@ const AddMarker = (props: MapMode) => {
       {positions ? positions.map((pos, i) => {
         //@ts-ignore
         return <Marker key={i} position={pos} > </Marker>
-      }): null}
+      }) : null}
     </>
   );
 };

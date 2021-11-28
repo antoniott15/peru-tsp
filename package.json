@@ -10,6 +10,7 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "@types/haversine": "^1.1.5",
     "@types/jest": "^26.0.15",
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.53",
@@ -17,6 +18,8 @@
     "caniuse-lite": "^1.0.30001279",
     "formik": "^2.2.6",
     "framer-motion": "^4.1.17",
+    "graphology": "^0.23.1",
+    "graphology-types": "^0.23.0",
     "leaflet": "^1.7.1",
     "leaflet-polylinedecorator": "^1.6.0",
     "react": "^17.0.1",
@@ -27,6 +30,7 @@
     "react-scripts": "4.0.1",
     "redux": "^4.0.5",
     "typescript": "^4.0.3",
+    "typescript-graph": "^0.2.1",
     "web-vitals": "^0.2.4"
   },
   "scripts": {
