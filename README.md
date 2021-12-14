@@ -15,6 +15,11 @@ This project with use an approximation algorithm to solve TSP on Peru with a vis
 
 ![](./project/cities.png)
 
+## Finished algorithm
+
+![](./project/connection.png)
+
+
 
 # Real-world TSP Applications
 
