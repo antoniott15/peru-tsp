@@ -18,8 +18,8 @@ export const CreateAdjacentMatrix = (graph: Graph): Promise<Array<Array<number>>
     if (graph.nodes().length === 0) return reject("no nodes in graph")
     if (graph.nodes().length === 1) return reject("no edges in graph")
 
-    graph.nodes().forEach((val2) => {
-      const nodes = new Array<number>()
+    graph.nodes().forEach((val2) => { 
+      const nodes = new Array<number>() 
       graph.nodes().forEach((val1) => {
         nodes.push(0)
       })
@@ -37,7 +37,7 @@ export const CreateAdjacentMatrix = (graph: Graph): Promise<Array<Array<number>>
   })
 }
 
-export const calcDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+export const calcHaversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
   var R = 6371e3;
   var dLat = toRad(lat2 - lat1);
   var dLon = toRad(lon2 - lon1);
@@ -151,11 +151,8 @@ export const DFS = (adjacencyList: Map<number, Array<number>>, len: number): Arr
             util(n, visited)
           }
         }
-
-
       }
     }
-
   }
 
   util(0,visited)

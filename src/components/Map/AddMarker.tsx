@@ -7,7 +7,7 @@ import {
   setPrePlaceLocation,
 } from "../../store/actions";
 
-import { graph, calcDistance, CreateAdjacentMatrix, PrimMST, DFS } from "./Graph"
+import { graph, calcHaversineDistance, CreateAdjacentMatrix, PrimMST, DFS } from "./Graph"
 interface MapMode {
   distances: boolean,
   cpu: boolean
@@ -20,20 +20,20 @@ const AddMarker = (props: MapMode) => {
   const [ran,setRandom ] = useState<Array<number>>([12312])
 
   useEffect(() => {
-    const lines = new Array<[number, number]>()
-
-    if (props.distances && positions) {
-      graph.forEachNode((node1, i) => {
+    const lines = new Array<[number, number]>() 
+ 
+    if (props.distances && positions) {  
+      graph.forEachNode((node1, i) => {  
         graph.forEachNode((node2, j) => {
-          if (node1 !== node2 && Number(node1) > Number(node2)) {
-            try {
+          if (node1 !== node2 && Number(node1) > Number(node2)) {   
+            try {   
               graph.addEdge(node1, node2, {
-                weight: calcDistance(i.lat, i.lng, j.lat, j.lng)
+                weight: calcHaversineDistance(i.lat, i.lng, j.lat, j.lng)
               })
             }catch(e) {
               const ed = graph.edge(node1, node2)
               graph.updateEdgeAttribute(ed, "weight", ()=>{
-                return calcDistance(i.lat, i.lng, j.lat, j.lng)
+                return calcHaversineDistance(i.lat, i.lng, j.lat, j.lng)
               })
             }
           }
@@ -45,12 +45,12 @@ const AddMarker = (props: MapMode) => {
           if (node1 !== node2 && Number(node1) > Number(node2)) {
             try {
               graph.addEdge(node1, node2, {
-                weight: calcDistance(i.lat, i.lng, j.lat, j.lng) + ran[Number(node1)]
+                weight: calcHaversineDistance(i.lat, i.lng, j.lat, j.lng) + ran[Number(node1)]
               })
             }catch(e) {
               const ed = graph.edge(node1, node2)
               graph.updateEdgeAttribute(ed, "weight", ()=>{
-                return calcDistance(i.lat, i.lng, j.lat, j.lng) + ran[Number(node1)]
+                return calcHaversineDistance(i.lat, i.lng, j.lat, j.lng) + ran[Number(node1)]
               })
             }
           }
@@ -86,6 +86,7 @@ const AddMarker = (props: MapMode) => {
     }else if(props.cpu) {
       setLinesCpu(lines)
     }
+
 
   }, [props, positions])
 
