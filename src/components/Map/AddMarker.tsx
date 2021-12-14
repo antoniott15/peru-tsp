@@ -7,43 +7,72 @@ import {
   setPrePlaceLocation,
 } from "../../store/actions";
 
-import { graph, calcDistance, CreateAdjacentMatrix, PrimMST, DrawLines } from "./Graph"
+import { graph, calcDistance, CreateAdjacentMatrix, PrimMST, DFS } from "./Graph"
 interface MapMode {
   distances: boolean,
   cpu: boolean
 }
 
 const AddMarker = (props: MapMode) => {
-  const [line, setLines] = useState<Array<[number, number]>>([[-9.189967, -75.015152]])
+  const [lineCpu, setLinesCpu] = useState<Array<[number, number]>>([[-9.189967, -75.015152]])
   const [positions, setPositions] = useState<Array<LatLngExpression | null>>([])
-
+  const [lineDistance, setLinesDistance] = useState<Array<[number, number]>>([[-9.189967, -75.015152]])
+  const [ran,setRandom ] = useState<Array<number>>([12312])
 
   useEffect(() => {
     const lines = new Array<[number, number]>()
-    if (props.cpu && positions) {
-      //@ts-ignore
-      // positions.forEach((value: LatLngExpression, i: number) => {
-      //   const ltng = value as LatLng
-      //   lines.push([ltng.lat, ltng.lng])
-      // })
 
-
+    if (props.distances && positions) {
       graph.forEachNode((node1, i) => {
         graph.forEachNode((node2, j) => {
           if (node1 !== node2 && Number(node1) > Number(node2)) {
-            graph.addEdge(node1, node2, {
-              weight: calcDistance(i.lat, i.lng, j.lat, j.lng)
-            })
+            try {
+              graph.addEdge(node1, node2, {
+                weight: calcDistance(i.lat, i.lng, j.lat, j.lng)
+              })
+            }catch(e) {
+              const ed = graph.edge(node1, node2)
+              graph.updateEdgeAttribute(ed, "weight", ()=>{
+                return calcDistance(i.lat, i.lng, j.lat, j.lng)
+              })
+            }
           }
         })
       })
+    }else if(props.cpu && positions){
+      graph.forEachNode((node1, i) => {
+        graph.forEachNode((node2, j) => {
+          if (node1 !== node2 && Number(node1) > Number(node2)) {
+            try {
+              graph.addEdge(node1, node2, {
+                weight: calcDistance(i.lat, i.lng, j.lat, j.lng) + ran[Number(node1)]
+              })
+            }catch(e) {
+              const ed = graph.edge(node1, node2)
+              graph.updateEdgeAttribute(ed, "weight", ()=>{
+                return calcDistance(i.lat, i.lng, j.lat, j.lng) + ran[Number(node1)]
+              })
+            }
+          }
+        })
+      })
+    }else {
+      console.log("returning");
+      return;
     }
 
     (async () => {
       try {
         const adjacency = await CreateAdjacentMatrix(graph)
 
-        const prim =  PrimMST(adjacency)
+        const [prim, len] =  PrimMST(adjacency)
+
+        const path = DFS(prim, len)
+
+        path.forEach((val) => {
+          const  point  = graph.getNodeAttributes(val)
+          lines.push([point.lat, point.lng])
+        })
 
       }catch(err) {
         console.log(err)
@@ -52,19 +81,26 @@ const AddMarker = (props: MapMode) => {
 
 
 
-    setLines(lines)
+    if(props.distances){
+      setLinesDistance(lines)
+    }else if(props.cpu) {
+      setLinesCpu(lines)
+    }
+
   }, [props, positions])
 
   useMapEvents({
     click: (e) => {
       graph.addNode(positions.length.toString(), { lat: e.latlng.lat, lng: e.latlng.lng })
       setPositions([...positions, e.latlng])
+      setRandom([...ran, ( Math.floor(Math.random() * (184850 - 10 + 1) + 10))])
     },
   });
 
   return positions.length <= 1 ? null : (
     <>
-      {props.cpu || props.distances ? <Polyline positions={line} /> : null}
+      {props.cpu ? <Polyline positions={lineCpu} /> : props.distances  ? <Polyline positions={lineDistance} /> : null}
+
       {positions ? positions.map((pos, i) => {
         //@ts-ignore
         return <Marker key={i} position={pos} > </Marker>

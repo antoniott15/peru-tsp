@@ -1,5 +1,6 @@
 
 
+import internal from 'events';
 import Graph, { } from 'graphology';
 import { LatLngLiteral } from "leaflet";
 
@@ -74,7 +75,7 @@ export interface DrawLines {
   to: string
 }
 
-export const PrimMST = (graph: Array<Array<number>>): Array<DrawLines> => {
+export const PrimMST = (graph: Array<Array<number>>): [Map<number, Array<number>>, number] => {
   const parent = new Array<number>()
   const key = new Array<number>()
   const set = new Array<unknown>()
@@ -100,13 +101,65 @@ export const PrimMST = (graph: Array<Array<number>>): Array<DrawLines> => {
     }
   }
 
-  const result = new Array<DrawLines>()
-  for (let i = 1; i < numVertex; i++){
-    result.push({
-      from: `${parent[i]}`,
-      to: `${i}`
-    })
-    console.log(`from: ${parent[i]} to ${i} with weight ${graph[i][parent[i]] }`)
+  const adj = new Map<number, Array<number>>()
+
+  for (let i = 1; i < numVertex; i++) {
+
+    const res = adj.has(parent[i])
+
+    if (res) {
+      const node = adj.get(parent[i])
+      if (node) {
+        node?.push(i)
+        adj.set(parent[i], node)
+      }
+
+    } else {
+      const l = new Array<number>()
+      l.push(i)
+      adj.set(parent[i], l)
+    }
+
+    console.log(`from: ${parent[i]} to ${i} with weight ${graph[i][parent[i]]}`)
   }
-  return result
+
+
+  return [adj, numVertex - 1]
+}
+
+
+
+export const DFS = (adjacencyList: Map<number, Array<number>>, len: number): Array<number> => {
+  const visited = new Array<boolean>(len)
+  for (let i = 0; i < len; i++) {
+    visited[i] = false
+  }
+
+  const path = new Array<number>()
+
+  const util = (init: number, visited: Array<boolean>) => {
+    visited[init] = true
+    path.push(init)
+
+    if (adjacencyList.has(init)) {
+      const v = adjacencyList.get(init)
+      if (v) {
+        //@ts-ignore
+        for (let i of v.values()) {
+          let n = i
+          if (!visited[n]) {
+            util(n, visited)
+          }
+        }
+
+
+      }
+    }
+
+  }
+
+  util(0,visited)
+
+  path.push(path[0])
+  return path
 }
